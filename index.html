@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>与晏同归-晏主BG同人交流站</title>
-    <link rel="icon" type="image/png" href="https://www.yanzhubg.com/setting/image/logo.png">
+    <link rel="icon" type="image/png" href="https://www.yanzhubg.com/setting/logo.png">
     <!-- 引用同一目录下的 CSS 文件 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/artalk@2/dist/Artalk.css">
 </head>
@@ -14,8 +14,8 @@
 <body class="light">
    <!-- 右上角工具栏 -->
    <div class="top-bar">
-        <button class="top-btn" onclick="toggleTheme()"><img src="https://www.yanzhubg.com/setting/image/light.png"></button>
-        <button class="top-btn" onclick="scrollToTop()"><img src="https://www.yanzhubg.com/setting/image/top.png"></button>
+        <button class="top-btn" onclick="toggleTheme()"><img src="https://www.yanzhubg.com/setting/light.png"></button>
+        <button class="top-btn" onclick="scrollToTop()"><img src="https://www.yanzhubg.com/setting/top.png"></button>
     </div>     
 
     <!-- 外层容器：负责宽度限制和内部排列 -->
@@ -74,8 +74,8 @@ function toggleTheme() {
     // 更新按钮图标
     const themeBtn = document.querySelector('.top-btn:first-child');
     if (themeBtn) {
-        themeBtn.innerHTML = newTheme === 'light' ? '<img src="https://www.yanzhubg.com/setting/image/light.png">' 
-    : '<img src="https://www.yanzhubg.com/setting/image/dark.png">';
+        themeBtn.innerHTML = newTheme === 'light' ? '<img src="https://www.yanzhubg.com/setting/light.png">' 
+    : '<img src="https://www.yanzhubg.com/setting/dark.png">';
     }
     
     // 同步 Artalk 主题（如果你有 artalkInstance）
@@ -95,8 +95,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // 初始化按钮图标
     const themeBtn = document.querySelector('.top-btn:first-child');
     if (themeBtn) {
-       themeBtn.innerHTML = newTheme === 'light' ? '<img src="https://www.yanzhubg.com/setting/image/light.png">' 
-    : '<img src="https://www.yanzhubg.com/setting/image/dark.png">';
+       themeBtn.innerHTML = newTheme === 'light' ? '<img src="https://www.yanzhubg.com/setting/light.png">' 
+    : '<img src="https://www.yanzhubg.com/setting/dark.png">';
     }
 });
 
