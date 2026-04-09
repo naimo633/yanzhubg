@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>与晏同归-晏主BG同人交流站</title>
+    <!-- 引用同一目录下的 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/artalk@2/dist/Artalk.css">
+</head>
+    <link rel="stylesheet" href="setting/style.css">
+    
+
+<body class="light">
+   <!-- 右上角工具栏 -->
+   <div class="top-bar">
+        <button class="top-btn" onclick="toggleTheme()"><img src="./setting/image/light.png"></button>
+        <button class="top-btn" onclick="scrollToTop()"><img src="./setting/image/top.png"></button>
+    </div>     
+
+    <!-- 外层容器：负责宽度限制和内部排列 -->
+    <div class="outer-container">
+        <div class="title-background">
+            <img class="title-image" src="" alt="与晏同归">
+            <div class="article-meta">
+                <p>江晏×少东家</p>
+                <p>燕云十六声-无盈利同人交流网站</p>
+            </div>
+        </div>
+        <!-- 催更栏 -->
+        <div class="cuigeng-bar">
+            <!-- 左侧：计数区域 -->
+            <div class="cuigeng-left">
+                <div class="cuigeng-numbers">
+                    <span class="cuigeng-total" id="totalCount">--</span>
+                </div>
+            </div>
+            <!-- 右侧：催更按钮 -->
+            <div class="cuigeng-right">
+                <button class="read-btn" onclick="window.location.href='#'">看 文</button>
+                <button class="cuigeng-btn" onclick="handleAnonymousKick()">催 更</button>
+            </div>
+        </div>
+   
+        <div id="randomMessage" class="randomMessage">
+                来踢一脚吧，没有催更铲不动惹T^T
+        </div>
+        <div class="article-meta">
+                内测中，敬请期待。。
+        </div>
+
+<script>
+// ===== 回到顶部功能 =====
+function scrollToTop() {
+    window.scrollTo({
+        top: 200,
+        behavior: 'smooth'  // 平滑滚动
+    });
+}
+
+// ===== 切换主题功能 =====
+function toggleTheme() {
+    // 获取当前主题
+    const currentTheme = document.body.classList.contains('dark') ? 'dark' : 'light';
+    // 切换到相反的主题
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    
+    // 更新 body 的 class
+    document.body.className = newTheme;
+    
+    // 保存到 localStorage
+    localStorage.setItem('theme', newTheme);
+    
+    // 更新按钮图标
+    const themeBtn = document.querySelector('.top-btn:first-child');
+    if (themeBtn) {
+        themeBtn.innerHTML = newTheme === 'light' ? '<img src="./setting/image/light.png">' 
+    : '<img src="./setting/image/dark.png">';
+    }
+    
+    // 同步 Artalk 主题（如果你有 artalkInstance）
+    if (window.artalkInstance) {
+        window.artalkInstance.setDarkMode(newTheme === 'dark');
+    }
+    
+    console.log('主题已切换为：', newTheme);
+}
+
+// ===== 页面加载时初始化主题 =====
+document.addEventListener('DOMContentLoaded', function() {
+    // 读取保存的主题，默认为浅色
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.body.className = savedTheme;
+    
+    // 初始化按钮图标
+    const themeBtn = document.querySelector('.top-btn:first-child');
+    if (themeBtn) {
+       themeBtn.innerHTML = newTheme === 'light' ? '<img src="./setting/image/light.png">' 
+    : '<img src="./setting/image/dark.png">';
+    }
+});
+
+    (function() {
+    // ========== 配置 ==========
+    const API_NAMESPACE = 'yuyu_anonymous';
+    const API_COUNTER = 'total_cuigeng';
+    const API_TODAY = 'today_cuigeng';
+    // =========================
+    
+    const 总数显示 = document.getElementById('totalCount');
+    const 今日显示 = document.getElementById('todayCount');
+    const 消息框 = document.getElementById('randomMessage');
+    
+    // 古风文案库
+    const 文案库 = [
+        '江晏脊背一震，又挨一尾',
+        '江晏：今夜想用什么姿势？',
+        '江晏：（侧目）又是何人？',
+        '江晏：（无奈）调皮！',
+        '牵了手，就要负责喔。',
+        '江晏：想吃鹌鹑腿还是面包？还是……我？',
+        '江晏：可还记得回家的路？',
+        '江晏：（无奈）小宝，别闹了。',
+    ];
+    
+    // 初始化计数
+    async function 初始化() {
+        await 获取全站计数();
+    }
+    
+    async function 获取全站计数() {
+        try {
+            const totalRes = await fetch(`https://api.counterapi.dev/v1/${API_NAMESPACE}/${API_COUNTER}`);
+            const totalData = await totalRes.json();
+            总数显示.innerText = totalData.count;
+        } catch (e) {
+            console.warn('获取计数失败，用默认值', e);
+            总数显示.innerText = '--';
+        }
+    }
+    
+    // 处理匿名踢（无冷却）
+    window.handleAnonymousKick = async function() {
+        try {
+            // 增加总数
+            const totalRes = await fetch(`https://api.counterapi.dev/v1/${API_NAMESPACE}/${API_COUNTER}/up`);
+            const totalData = await totalRes.json();
+            总数显示.innerText = totalData.count;
+                     
+            // 随机文案
+            const 随机索引 = Math.floor(Math.random() * 文案库.length);
+            消息框.innerText = `${文案库[随机索引]}`;
+            
+            // 4秒后恢复默认
+            setTimeout(() => {
+                消息框.innerText = '感谢少东家的支持！';
+            }, 4000);
+            
+        } catch (error) {
+            console.error('催更失败', error);
+            消息框.innerText = '江晏：（疑惑）踢空了？';
+        }
+    };
+})();
+
+    // 启动
+    初始化();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/artalk@2/dist/Artalk.js"></script>
+
+</div>
+
+</body>
+</html>
