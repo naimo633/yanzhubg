@@ -2,22 +2,21 @@
 <html lang="zh">
 <style>
     body.light {
-        background-image: url('https://yanzhubg-img.oss-cn-wuhan-lr.aliyuncs.com/work/naimo/ljzm-bg-l.png');
-        background-size: cover;
-        background-position: top center; 
-        background-repeat: no-repeat;
-        background-attachment: fixed;
+    --bg-reader: url('https://yanzhubg-img.oss-cn-wuhan-lr.aliyuncs.com/work/naimo/ljzm-bg-l.png');
     }
     body.dark {
-    background-image: url('https://yanzhubg-img.oss-cn-wuhan-lr.aliyuncs.com/work/naimo/ljzm-bg-d.png');
-    background-size: cover; 
-    background-position: top center; 
-    background-repeat: no-repeat; 
-    background-attachment: fixed;
+    --bg-reader: url('https://yanzhubg-img.oss-cn-wuhan-lr.aliyuncs.com/work/naimo/ljzm-bg-d.png');
     }
     .pure-reader .article-title {
     margin-top: 180px!important;
     letter-spacing: 1px;
+}
+ .pure-reader {
+    background-image: var(--bg-reader);
+    background-size: cover; 
+    background-position: top center; 
+    background-repeat: no-repeat; 
+    background-attachment: fixed;
 }
 </style>
     
