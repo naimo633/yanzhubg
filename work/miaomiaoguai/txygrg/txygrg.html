@@ -49,6 +49,7 @@
     <div class="outer-container">
         <div class="pure-reader" id="articleContainer">
             <div class="loading">加载文章中...</div>
+        </div>
     <script>
     // ===== 章节目录配置（写死在HTML里） =====
     const chapters = [
@@ -98,8 +99,18 @@
                 return `<span class="${className || 'tag1'}">${text}</span>`;
             }).join('');
             
-            const paragraphs = contentText.split('\n').filter(p => p.trim() !== '');
-            const contentHtml = paragraphs.map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
+            // const paragraphs = contentText.split('\n').filter(p => p.trim() !== '');
+            // const contentHtml = paragraphs.map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
+            const lines = contentText.split('\n').filter(line => line.trim() !== '');
+            const contentHtml = lines.map(line => {
+            // 检测是否是图片链接（以 .jpg/.png/.gif/.webp 结尾）
+            const isImage = /\.(jpg|jpeg|png|gif|webp|bmp)$/i.test(line.trim());
+            if (isImage) {
+                return `<div class="article-image"><img src="${line.trim()}" alt="插图"></div>`;
+                } else {
+                return `<p>${line.replace(/\n/g, '<br>')}</p>`;
+            }
+            }).join('');
             
             document.title = `天下晏故人归-${title}`;
             
