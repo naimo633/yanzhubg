@@ -532,7 +532,8 @@ body {
 }
 
 .pure-reader .article-content {
-background: var(--bg);
+    background: var(--bg);
+    padding-top: 1em;
 }
 
 .pure-reader .article-content img {
@@ -550,7 +551,7 @@ background: var(--bg);
 
 .chapter-nav {
     margin: 50px 0 50px 0;
-    padding-top: 25px;
+    padding: 1em;
     border-top: 1px solid var(--border);
     display: flex;
     justify-content: space-between;
