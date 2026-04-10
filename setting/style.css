@@ -535,6 +535,10 @@ body {
 background: var(--bg);
 }
 
+.pure-reader .article-content img {
+    width: 100%;
+}
+
 .pure-reader .article-content p {
     padding: 0 1em;
     margin-bottom: 1em;
