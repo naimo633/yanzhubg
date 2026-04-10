@@ -221,6 +221,31 @@
         const chapterId = getChapterFromUrl();
         loadChapter(chapterId);
     });
+
+    // 禁止右键菜单（针对图片）
+    document.addEventListener('contextmenu', function(e) {
+        if (e.target.tagName === 'IMG') {
+            e.preventDefault();
+            return false;
+        }
+    });
+    
+    // 禁止拖拽图片
+    const images = document.querySelectorAll('img');
+    images.forEach(img => {
+        img.addEventListener('dragstart', function(e) {
+            e.preventDefault();
+            return false;
+        });
+    });
+    
+    // 可选：禁止保存快捷键
+    document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
+            e.preventDefault();
+            return false;
+        }
+    });
 </script>
 </body>
 </html>
