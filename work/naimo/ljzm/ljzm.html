@@ -7,7 +7,6 @@
     body.dark {
     --bg-reader: url('https://yanzhubg-img.oss-cn-wuhan-lr.aliyuncs.com/work/naimo/ljzm-bg-d.png');
     }
-    
  .pure-reader {
     background: none;
     background-image: var(--bg-reader);
@@ -17,80 +16,6 @@
     background-attachment: fixed;
 }
 </style>
-
-<div id="screen-watermark"></div>
-
-<style>
-#fixed-watermark {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 9999;
-}
-</style>
-
-<script>
-(function() {
-  const container = document.getElementById('fixed-watermark');
-  if (!container) return;
-
-  const text = '灵鲛织梦 · 奶沫';
-  const fontSize = 16;        // 字号
-  const opacity = 0.08;       // 透明度（浅色深色可自动改）
-  const cols = 8;             // 横向几个水印
-  const rows = 12;            // 纵向几个水印（按照屏幕铺满即可，不用滑动）
-  
-  function updateWatermark() {
-    // 获取屏幕宽高（不依赖滚动条）
-    const w = window.innerWidth;
-    const h = window.innerHeight;
-    
-    // 用 canvas 绘制整屏水印（不涉及滚动）
-    const canvas = document.createElement('canvas');
-    canvas.width = w;
-    canvas.height = h;
-    const ctx = canvas.getContext('2d');
-    
-    ctx.font = `${fontSize}px "PingFang SC", "Noto Serif SC", system-ui`;
-    ctx.fillStyle = `rgba(0, 0, 0, ${opacity})`;
-    if (document.body.classList.contains('dark')) {
-      ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
-    }
-    
-    const stepX = w / (cols + 1);
-    const stepY = h / (rows + 1);
-    
-    for (let i = 1; i <= cols; i++) {
-      for (let j = 1; j <= rows; j++) {
-        const x = i * stepX;
-        const y = j * stepY;
-        ctx.save();
-        ctx.translate(x, y);
-        ctx.rotate(-15 * Math.PI / 180);
-        ctx.fillText(text, -ctx.measureText(text).width / 2, 0);
-        ctx.restore();
-      }
-    }
-    
-    // 直接把画布作为背景（不用 repeat）
-    container.style.backgroundImage = `url(${canvas.toDataURL()})`;
-    container.style.backgroundSize = `${w}px ${h}px`;
-  }
-  
-  // 初始化
-  updateWatermark();
-  
-  // 窗口改变时重绘（确保始终满屏固定）
-  window.addEventListener('resize', updateWatermark);
-  
-  // 监听主题变化
-  const observer = new MutationObserver(() => updateWatermark());
-  observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
-})();
-</script>
     
 <head>
     <meta charset="UTF-8">
@@ -99,6 +24,54 @@
     <link rel="stylesheet" href="https://www.yanzhubg.com/setting/style.css">
     <link rel="stylesheet" href="https://www.yanzhubg.com/setting/reader.css">
 </head>
+
+<script>
+  (function() {
+    let blackLayer = null;
+
+    function addBlackLayer() {
+      if (blackLayer) return;
+      blackLayer = document.createElement('div');
+      blackLayer.id = 'anti-screenshot-layer';
+      blackLayer.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #000000;
+        z-index: 99999;
+        pointer-events: none;
+      `;
+      document.body.appendChild(blackLayer);
+    }
+
+    function removeBlackLayer() {
+      if (blackLayer) {
+        blackLayer.remove();
+        blackLayer = null;
+      }
+    }
+    // 页面失去焦点
+    document.addEventListener('visibilitychange', function() {
+      if (document.hidden) {
+        addBlackLayer();   // 黑屏保护
+      } else {
+        removeBlackLayer(); // 恢复
+      }
+    });
+  })();
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'PrintScreen') {
+    addBlackLayer();
+    setTimeout(removeBlackLayer, 800); // 0.8秒后恢复
+  }
+  if ((e.metaKey && e.shiftKey && (e.key === '3' || e.key === '4'))) {
+    addBlackLayer();
+    setTimeout(removeBlackLayer, 800);
+  }
+});
+</script>
 
 <body class="light">
     <!-- 右上角工具栏 -->
