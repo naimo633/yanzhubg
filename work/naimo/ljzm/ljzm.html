@@ -15,51 +15,78 @@
     background-position: top center; 
     background-repeat: no-repeat; 
     background-attachment: fixed;
+
+#fixed-watermark {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
 }
-    /* 水印样式（只在这个页面生效） */
-        .reader-watermark {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 9999;
-            background-image: repeating-linear-gradient(
-                45deg,
-                rgba(0, 0, 0, 0.04) 0px,
-                rgba(0, 0, 0, 0.04) 2px,
-                transparent 2px,
-                transparent 10px
-            );
-        }
-        
-        .reader-watermark::after {
-            content: "灵鲛织梦@奶沫";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-15deg);
-            font-size: 16px;
-            color: rgba(0, 0, 0, 0.1);
-            white-space: nowrap;
-            letter-spacing: 4px;
-        }
-        
-        body.dark .reader-watermark {
-            background-image: repeating-linear-gradient(
-                45deg,
-                rgba(255, 255, 255, 0.04) 0px,
-                rgba(255, 255, 255, 0.04) 2px,
-                transparent 2px,
-                transparent 10px
-            );
-        }
-        
-        body.dark .reader-watermark::after {
-            color: rgba(255, 255, 255, 0.08);
-        }
+}
 </style>
+
+<script>
+(function() {
+  const container = document.getElementById('fixed-watermark');
+  if (!container) return;
+
+  const text = '灵鲛织梦 · 奶沫';
+  const fontSize = 16;        // 字号
+  const opacity = 0.08;       // 透明度（浅色深色可自动改）
+  const cols = 8;             // 横向几个水印
+  const rows = 12;            // 纵向几个水印（按照屏幕铺满即可，不用滑动）
+  
+  function updateWatermark() {
+    // 获取屏幕宽高（不依赖滚动条）
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    
+    // 用 canvas 绘制整屏水印（不涉及滚动）
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    
+    ctx.font = `${fontSize}px "PingFang SC", "Noto Serif SC", system-ui`;
+    ctx.fillStyle = `rgba(0, 0, 0, ${opacity})`;
+    if (document.body.classList.contains('dark')) {
+      ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+    }
+    
+    const stepX = w / (cols + 1);
+    const stepY = h / (rows + 1);
+    
+    for (let i = 1; i <= cols; i++) {
+      for (let j = 1; j <= rows; j++) {
+        const x = i * stepX;
+        const y = j * stepY;
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(-15 * Math.PI / 180);
+        ctx.fillText(text, -ctx.measureText(text).width / 2, 0);
+        ctx.restore();
+      }
+    }
+    
+    // 直接把画布作为背景（不用 repeat）
+    container.style.backgroundImage = `url(${canvas.toDataURL()})`;
+    container.style.backgroundSize = `${w}px ${h}px`;
+  }
+  
+  // 初始化
+  updateWatermark();
+  
+  // 窗口改变时重绘（确保始终满屏固定）
+  window.addEventListener('resize', updateWatermark);
+  
+  // 监听主题变化
+  const observer = new MutationObserver(() => updateWatermark());
+  observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+})();
+</script>
     
 <head>
     <meta charset="UTF-8">
@@ -89,7 +116,6 @@
     </div>
 
     <!-- 外层容器：负责宽度限制和内部排列 -->
-    <div class="reader-watermark">
     <div class="outer-container">
         <div class="pure-reader" id="articleContainer">
             <div class="loading">加载文章中...</div>
@@ -248,6 +274,5 @@
         loadChapter(chapterId);
     });
 </script>
-</div>
 </body>
 </html>
