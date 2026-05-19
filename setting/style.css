@@ -532,7 +532,6 @@ body {
 }
 
 .pure-reader .article-content {
-    background: var(--bg);
     padding-top: 1em;
 }
 
