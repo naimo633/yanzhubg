@@ -15,17 +15,6 @@
     background-repeat: no-repeat; 
     background-attachment: fixed;
 }
-#full-watermark {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;   /* 让水印不干扰点击 */
-  z-index: 9999;
-  background-repeat: repeat;
-  background-size: auto;
-}
 </style>
     
 <head>
@@ -35,54 +24,6 @@
     <link rel="stylesheet" href="https://www.yanzhubg.com/setting/style.css">
     <link rel="stylesheet" href="https://www.yanzhubg.com/setting/reader.css">
 </head>
-
-<script>
-  (function() {
-    let blackLayer = null;
-
-    function addBlackLayer() {
-      if (blackLayer) return;
-      blackLayer = document.createElement('div');
-      blackLayer.id = 'anti-screenshot-layer';
-      blackLayer.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: #000000;
-        z-index: 99999;
-        pointer-events: none;
-      `;
-      document.body.appendChild(blackLayer);
-    }
-
-    function removeBlackLayer() {
-      if (blackLayer) {
-        blackLayer.remove();
-        blackLayer = null;
-      }
-    }
-    // 页面失去焦点
-    document.addEventListener('visibilitychange', function() {
-      if (document.hidden) {
-        addBlackLayer();   // 黑屏保护
-      } else {
-        removeBlackLayer(); // 恢复
-      }
-    });
-  })();
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'PrintScreen') {
-    addBlackLayer();
-    setTimeout(removeBlackLayer, 800); // 0.8秒后恢复
-  }
-  if ((e.metaKey && e.shiftKey && (e.key === '3' || e.key === '4'))) {
-    addBlackLayer();
-    setTimeout(removeBlackLayer, 800);
-  }
-});
-</script>
 
 <body class="light">
     <!-- 右上角工具栏 -->
@@ -272,107 +213,6 @@ document.addEventListener('keydown', function(e) {
         const chapterId = getChapterFromUrl();
         loadChapter(chapterId);
     });
-        
- <!-- =========全屏水印 + 失焦黑屏 ========= -->
-(function() {
-  // ========= 1. 水印配置 =========
-  const TEXT = '© 江晏×少东家 · 同人作品 · 禁止转载';
-  const FONT_SIZE = 16;
-  const OPACITY_LIGHT = 0.06;
-  const OPACITY_DARK  = 0.08;
-  const COLS = 8;       // 横向水印数量（越多越密）
-  const ROWS = 16;      // 纵向水印数量（控制长图水印密度）
-  const ROTATE = -15;
-
-  function drawWatermark() {
-    const w = window.innerWidth;
-    const h = window.innerHeight;
-    const canvas = document.createElement('canvas');
-    canvas.width = w;
-    canvas.height = h;
-    const ctx = canvas.getContext('2d');
-
-    const isDark = document.body.classList.contains('dark');
-    const opacity = isDark ? OPACITY_DARK : OPACITY_LIGHT;
-    ctx.font = `${FONT_SIZE}px "Noto Serif SC", "PingFang SC", system-ui`;
-    ctx.fillStyle = `rgba(${isDark ? 255 : 0}, ${isDark ? 255 : 0}, ${isDark ? 255 : 0}, ${opacity})`;
-
-    const stepX = w / (COLS + 1);
-    const stepY = h / (ROWS + 1);
-
-    for (let i = 1; i <= COLS; i++) {
-      for (let j = 1; j <= ROWS; j++) {
-        const x = i * stepX;
-        const y = j * stepY;
-        ctx.save();
-        ctx.translate(x, y);
-        ctx.rotate(ROTATE * Math.PI / 180);
-        const textWidth = ctx.measureText(TEXT).width;
-        ctx.fillText(TEXT, -textWidth / 2, 0);
-        ctx.restore();
-      }
-    }
-
-    const watermarkDiv = document.getElementById('full-watermark');
-    if (watermarkDiv) {
-      watermarkDiv.style.backgroundImage = `url(${canvas.toDataURL()})`;
-      watermarkDiv.style.backgroundSize = `${w}px ${h}px`;
-    }
-  }
-
-  drawWatermark();
-  window.addEventListener('resize', drawWatermark);
-  const observer = new MutationObserver(() => drawWatermark());
-  observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
-
-  // ========= 2. 截屏黑屏（失焦 + 关键截图热键） =========
-  let blackLayer = null;
-
-  function addBlackLayer() {
-    if (blackLayer) return;
-    blackLayer = document.createElement('div');
-    blackLayer.id = 'anti-screenshot';
-    blackLayer.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: black;
-      z-index: 99999;
-      pointer-events: none;
-    `;
-    document.body.appendChild(blackLayer);
-  }
-
-  function removeBlackLayer() {
-    if (blackLayer) {
-      blackLayer.remove();
-      blackLayer = null;
-    }
-  }
-
-  // 页面失焦黑屏
-  document.addEventListener('visibilitychange', function() {
-    if (document.hidden) {
-      addBlackLayer();
-    } else {
-      removeBlackLayer();
-    }
-  });
-
-  // 捕捉截图组合键（PrintScreen / Command+Shift+3/4）
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'PrintScreen') {
-      addBlackLayer();
-      setTimeout(removeBlackLayer, 800);
-    }
-    if ((e.metaKey && e.shiftKey && (e.key === '3' || e.key === '4'))) {
-      addBlackLayer();
-      setTimeout(removeBlackLayer, 800);
-    }
-  });
-})();
 </script>
 </body>
 </html>
