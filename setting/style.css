@@ -472,6 +472,86 @@ body {
     font-size: 0.9em;
 }
 
+
+/* 瀑布流容器 */
+.masonry-grid {
+    width: 100%;
+    margin: 8px;
+    position: relative;
+}
+
+.grid-sizer {
+    width: calc(50% - 8px); /* 设定两列布局，每个卡片宽度占一半减去间距 */
+}
+        
+/* 间隔标尺 */
+.gutter-sizer {
+    width: 4px; /* 列间距 */
+}
+
+/* 所有卡片共用这个样式 */
+.grid-item {
+    width: calc(50% - 12px); /* 宽度必须和 .grid-sizer 完全一致 */
+    margin-bottom: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--card-bg, #fff);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+/* 你的图片样式 */
+.grid-item img {
+    width: 100%;
+    display: block;
+}
+
+.update-date {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 5;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.finish-tag {
+  position: absolute;
+  background: #00000085;
+  top: 8px;
+  right: 8px;
+  border-radius: 4px;
+  z-index: 5;
+  font-size: 11px;
+  font-weight: 400;
+  padding: 6px 4px 2px 3px;
+  color: #fff;
+  writing-mode: vertical-rl;        /* 文字竖排：从上往下 */
+  letter-spacing: 4px;
+  text-orientation: mixed;
+  box-shadow: -2px 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.book-info {
+  padding: 8px;
+}
+
+.book-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 2px 0;
+  color: var(--text);
+}
+
+.book-desc {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-light);
+  margin: 0 0 4px 0;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 /* ===== 纯净阅读器样式（新增）===== */
 .pure-reader {
     max-width: 750px;
