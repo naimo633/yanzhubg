@@ -46,12 +46,89 @@
                 来踢一脚吧，没有催更铲不动惹T^T
         </div>
         <div class="article-meta">
-                <p>网站国内备案通过啦，域名是 <b>https://www.yanzhubg.com</b> </p>
-                <p>看文功能也开了，只放了一本文本、一本漫本作为参考，大家可以看一下样式，阅读体验怎么样？可以提要求。</p>
-                <p>后续还会陆续更新其他老师的作品~</p>
+                <p><b>域名</b> yanzhubg.com </p>
+                <p><b>催更群</b> xhs </p>
+                <p><b>催更群</b> dy </p>
         </div>
 
+        <div class="masonry-grid" id="masonry-grid">
+  <div class="grid-sizer"></div>
+  <div class="gutter-sizer"></div>
+  <!-- 卡片 1 -->
+  <div class="grid-item">
+    <div class="book-cover">
+      <img src="https://yanzhubg-img.oss-cn-wuhan-lr.aliyuncs.com/work/wfql.png">
+      <span class="update-date" style="color: #2F91BF">2026/05/20</span>
+      <span class="finish-tag">完结</span>
+    </div>
+    <div class="book-info">
+      <h3 class="book-title">无风起浪</h3>
+      <p class="book-desc">我该如何护你周全，又该如何，应对这段感情……</p>
+    </div>
+  </div>
+
+  <!-- 卡片 2 -->
+  <div class="grid-item">
+    <div class="book-cover">
+      <img src="https://yanzhubg-img.oss-cn-wuhan-lr.aliyuncs.com/work/%E7%81%B5%E9%B2%9B%E7%BB%87%E6%A2%A6.png">
+      <span class="update-date" style="color: #C8D3D8">2026/05/20</span>
+    </div>
+    <div class="book-info">
+      <h3 class="book-title">灵鲛织梦</h3>
+      <p class="book-desc">江晏，你能为心上人做到哪一步？</p>
+    </div>
+  </div>
+
+   <!-- 卡片 3 -->
+  <div class="grid-item">
+    <div class="book-cover">
+      <img src="https://yanzhubg-img.oss-cn-wuhan-lr.aliyuncs.com/work/%E6%B2%B3%E8%A5%BF%E8%A7%84%E5%88%99%E6%80%AA%E8%B0%88.jpg">
+      <span class="update-date" style="color: #C8D3D8">2026/05/20</span>
+      <span class="finish-tag">完结</span>
+    </div>
+    <div class="book-info">
+      <h3 class="book-title">河西规则怪谈</h3>
+    </div>
+  </div>
+
+  <!-- 卡片 4 -->
+  <div class="grid-item">
+    <div class="book-cover">
+      <img src="https://yanzhubg-img.oss-cn-wuhan-lr.aliyuncs.com/work/%E6%91%98%E6%98%9F.jpg">
+      <span class="update-date" style="color: #ffffff86">2026/05/20</span>
+      <span class="finish-tag">完结</span>
+    </div>
+    <div class="book-info">
+      <h3 class="book-title">摘星</h3>
+    </div>
+  </div>
+</div>
+
+<!-- Masonry 瀑布流库 -->
+<script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+<!-- 引入 imagesLoaded，保证图片加载后重新布局 -->
+<script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
+
 <script>
+    // 等待页面所有内容（尤其是图片）加载完毕后再开始布局
+    window.addEventListener('load', function() {
+        var container = document.querySelector('.masonry-grid');
+        
+        // 初始化 Masonry，配置项与掘金文章完全一致
+        var msnry = new Masonry(container, {
+            columnWidth: '.grid-sizer', // 指定列宽的“标尺”元素
+            itemSelector: '.grid-item', // 指定哪些元素是卡片
+            gutter: '.gutter-sizer',    // 指定间距的“标尺”元素
+            percentPosition: true,      // 使用百分比定位，让布局响应式
+            transitionDuration: '0.2s'
+        });
+
+        // 等所有图片加载完后，重新刷新布局，避免图片重叠
+        imagesLoaded(container, function() {
+            msnry.layout();
+        });
+    });
+
 // ===== 回到顶部功能 =====
 function scrollToTop() {
     window.scrollTo({
