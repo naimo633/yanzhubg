@@ -79,7 +79,7 @@ body {
     max-width: 400px;
     min-width: 150px;
     height: auto;
-    margin: 250px 0 0 0;
+    margin: 12em 0 1em 1em;
     }
    
 /* ===== 左上角悬浮工具栏 ===== */
@@ -256,6 +256,13 @@ body {
 /* 元信息 */
 .article-meta {
     color: #fff;
+    margin-left: 1em;
+    margin-bottom: 20px;
+    font-size: 1em;
+}
+
+.text {
+    color: var(--text);
     margin-left: 1em;
     margin-bottom: 20px;
     font-size: 1em;
