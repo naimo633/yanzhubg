@@ -32,7 +32,7 @@ body.dark {
     --bg: #1a1a1a;
     --background: rgba(0, 0, 0, 0.2); 
     --card-background: rgba(0, 0, 0, 0.5); 
-    --surface: #1e2224;
+    --surface: #2b3032;
     --border: #383838;
     --text: #e0e0e0;
     --text-tag:#8999f1;
@@ -67,7 +67,7 @@ body {
 .title-background {
     /* 背景图片 - 替换成你的图片链接 */
     background-image: url('https://yanzhubg-img.oss-cn-wuhan-lr.aliyuncs.com/background/bg3.png'); /* 示例图，请替换 */
-    background-size: auto 100%;
+    background-size: cover;
     background-repeat: no-repeat; /* 不重复 */
     background-position: top center; /* 顶端居中 */
 }
@@ -319,7 +319,7 @@ body {
 }
 
 .read-btn {
-    background: var(--bg);           /* 灰色背景 */
+    background: var(--surface);
     color: var(--text-light);
     border: none;
     padding: 8px 32px;
@@ -502,7 +502,7 @@ body {
     margin-bottom: 8px;
     border-radius: 4px;
     overflow: hidden;
-    background: var(--card-bg, #fff);
+    background: var(--surface);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
 
