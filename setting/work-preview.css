@@ -119,6 +119,7 @@ body {
 .tab-btn.active {
     background-color: var(--background);
     border-bottom: 3px solid var(--button-bg);
+    color: var(--button-bg);
 }
 .tab-btn.active::after {
     content: '';
