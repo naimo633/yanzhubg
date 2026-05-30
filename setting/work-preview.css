@@ -1,0 +1,212 @@
+body {
+    background-color: var(--bg);
+    display: block;
+    padding: 24px 0;
+}
+
+.preview-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/*书封*/
+.hero-section {
+    text-align: center;
+}
+
+.book-cover-large {
+    width: 160px;
+    height: 220px;
+    margin: 0 auto 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+.book-cover-large img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.book-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+}
+.book-author {
+    font-size: 16px;
+    color: var(--text-light);
+    margin: 1em;
+    white-space: nowrap;
+}
+.book-tags {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 1em;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.book-tags .tag {
+    padding: 0 1em;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--border);
+}
+
+.book-tags  .tag1 {
+    background: #dbdddb;
+    color: #767776;
+    padding: 4px 14px;
+    border-radius: 4px;
+    font-size: 0.85em;
+}
+
+.book-tags  .tag2 {
+    background: #ebead3;
+    color: #968d5a;
+    padding: 4px 14px;
+    border-radius: 4px;
+    font-size: 0.85em;
+}
+
+.book-tags  .tag3 {
+    background: #c9aa44;
+    color: #ffffff;
+    padding: 4px 14px;
+    border-radius: 4px;
+    font-size: 0.85em;
+}
+
+.book-summary {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-light);
+    max-width: 600px;
+    margin: 1em;
+    text-align: left;  
+}
+
+.chapter-stats {
+    font-size: 13px;
+    color: var(--text-light);
+}
+
+.book-total-words{
+    font-size: 13px;
+    color: var(--text-light);
+    margin-bottom: 20px;
+}
+
+
+/* 标签页导航 */
+.tabs-nav {
+    display: flex;
+    margin-bottom: 1em;
+    background-color: var(--background);
+}
+.tab-btn {
+    flex: 1;  
+    padding: 0.5em 1em;
+    font-size: 16px;
+    font-weight: 500;
+    background: none;
+    border-radius: 0;
+    cursor: pointer;
+    color: var(--text-light);
+    transition: all 0.2s;
+    position: relative;
+}
+.tab-btn.active {
+    background-color: var(--background);
+    border-bottom: 3px solid var(--button-bg);
+}
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+}
+.tab-content {
+    display: none;
+}
+.tab-content.active {
+    display: block;
+}
+        
+/* 目录列表 */
+.chapter-list {
+    display: flex;
+    flex-direction: column;
+}
+.chapter-item {
+    background-color: var(--background);
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    text-decoration: none;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+    margin-bottom: 0px!important;
+}
+.chapter-item:hover {
+    background: var(--surface);
+    border-color: var(--border);
+    transform: translateX(4px);
+}
+.chapter-num {
+    color: var(--text-light);
+    font-size: 14px;
+    width: 5em;
+}
+
+.chapter-title {
+    flex: 1;
+    margin: 0 0em;
+    font-size: 1em;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /*太长省略*/
+}
+
+.comment-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.comment-item {
+    background: var(--background);
+    padding: 16px;
+    cursor: pointer;
+    transition: background 0.2s;
+    border-top: 1px solid var(--border);
+    position: relative;
+}
+
+.comment-text {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    padding-right: 50px;
+}
+
+.comment-item.expanded .comment-text {
+    display: block;
+}
+
+/* 不要用 ::after，改用真实元素 */
+.comment-toggle {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    font-size: 14px;
+    color: var(--button-bg);
+    opacity: 0.7;
+    pointer-events: none;  /* 让提示不干扰点击 */
+}
