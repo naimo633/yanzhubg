@@ -172,7 +172,7 @@ function renderComments() {
             ? `<div class="comment-text-content">${comment.text.replace(/\n/g, '<br>')}</div>` 
             : '';
         
-        // 图文为空，跳过评论
+        // 如果图文都为空，跳过这条评论
         if (!textHtml && !imageHtml) return '';
         
         return `
