@@ -197,6 +197,7 @@ body {
 /* 折叠时限制文字行数 */
 .comment-item:not(.expanded) .comment-text-content {
     display: -webkit-box;
+    color: var(--text);
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
@@ -211,6 +212,7 @@ body {
 /* 展开时恢复 */
 .comment-item.expanded .comment-text-content {
     display: block;
+    color: var(--text);
 }
 
 .comment-item.expanded .comment-image {
