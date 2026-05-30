@@ -191,14 +191,33 @@ body {
     line-height: 1.6;
     color: var(--text);
     display: -webkit-box;
-    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
     padding-right: 1em;
 }
 
-.comment-item.expanded .comment-text {
+/* 折叠时限制文字行数 */
+.comment-item:not(.expanded) .comment-text-content {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* 图片在折叠时也限制高度（可选） */
+.comment-item:not(.expanded) .comment-image {
+    max-height: 8em;
+    width: auto;
+}
+
+/* 展开时恢复 */
+.comment-item.expanded .comment-text-content {
     display: block;
+}
+
+.comment-item.expanded .comment-image {
+    width: 100%;
+    height: auto;
 }
 
 /* 不要用 ::after，改用真实元素 */
