@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>文章合集</title>
+    <!-- 引用同一目录下的 CSS 文件 -->
+    <link rel="stylesheet" href="../../setting/style.css">
+    <link rel="stylesheet" href="../../setting/work-card.css">
+    <link rel="stylesheet" href="../../setting/preview.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shuffle/6.1.0/shuffle.min.css">
+</head>
+
+<style>
+    .hero-section {
+        background-image: url('https://yanzhubg-img.oss-cn-wuhan-lr.aliyuncs.com/background/wfql-bg.png');
+        background-size: 100% auto;  /* 宽度100%，高度自动 */
+        background-repeat: no-repeat; /* 不重复 */
+        background-position: top center; /* 顶端居中 */
+    }
+</style>
+
+<body class="light">
+   <!-- 右上角工具栏 -->
+   <div class="top-bar">
+        <button class="top-btn" onclick="toggleTheme()"><img src="https://www.yanzhubg.com/setting/light.png"></button>
+        <button class="top-btn" onclick="scrollToTop()"><img src="https://www.yanzhubg.com/setting/top.png"></button>
+    </div>
+
+    <div class="outer-container">
+        <div class="hero-section">
+            <div class="book-cover-large">
+                <img src="https://yanzhubg-img.oss-cn-wuhan-lr.aliyuncs.com/work/wfql.png" alt="无风起浪">
+            </div>
+            <h1 class="book-title">无风起浪</h1>
+            <div class="book-author">霄霄 · 著</div>        
+            <div class="book-tags">
+                <span class="tag3">原著向</span>
+                <span class="tag2">完结</span>
+            </div>
+            <div id="total-words" class="book-total-words"></div>   
+            <p class="book-summary">“我该如何护你周全，又该如何，应对这段感情……”话说出口，他自己也惊了一下。</p>
+        </div>
+
+        <!-- 标签页导航 -->
+        <div class="tabs-nav">
+            <button class="tab-btn active" data-tab="chapters">目 录</button>
+            <button class="tab-btn" data-tab="comments">REPO</button>
+        </div>
+
+        <!-- 目录内容 -->
+        <div id="tab-chapters" class="tab-content active">
+            <div class="chapter-list" id="chapterList"></div>
+        </div>
+
+        <!-- 评论内容 -->
+        <div id="tab-comments" class="tab-content">
+            <div class="comment-list" id="commentList"></div>
+        </div>
+    </div>
+
+<script src="wfql-comments.js"></script>
+
+<script>
+    async function loadChaptersFromFiles() {
+    const chapters = [];
+    let num = 1;
+    let hasMore = true;
+
+    while (hasMore) {
+        const filePath = `https://www.yanzhubg.com/work/xiaoxiao/wfql/article/wfql-${num}.txt`;
+        
+        try {
+            const response = await fetch(filePath);
+            if (!response.ok) {
+                hasMore = false;
+                break;
+            }
+            
+            const text = await response.text();
+            const lines = text.split('\n');
+            const firstLine = lines[0].trim();
+            
+            // 解析标题
+            const firstSpaceIndex = firstLine.indexOf(' ');
+            const chapterNum = parseInt(firstLine.substring(0, firstSpaceIndex));
+            const title = firstLine.substring(firstSpaceIndex + 1).trim();
+            
+            // 统计字数
+            let content = lines.slice(1).join('\n');
+            content = content.replace(/^---\n/, '');
+            const wordCount = content.length;
+            
+            chapters.push({
+                num: chapterNum,
+                title: title,
+                wordCount: wordCount
+            });
+            
+            num++;
+        } catch (err) {
+            console.warn(`第${num}章加载失败，停止扫描`);
+            hasMore = false;
+        }
+    }
+    
+    return chapters;
+}
+
+// 渲染目录
+async function renderChapters() {
+    const container = document.getElementById('chapterList');
+    if (!container) return;
+
+    try {
+        // 自动加载章节
+        const chapters = await loadChaptersFromFiles();
+        
+        if (chapters.length === 0) {
+            container.innerHTML = '<div>暂无目录</div>';
+            return;
+        }
+        
+        // 倒序排列（最新章节在上）
+        const reversedChapters = [...chapters].reverse();
+        
+        // 计算总字数
+        const totalWords = chapters.reduce((sum, ch) => sum + ch.wordCount, 0);
+        
+        // 更新总字数显示
+        const totalWordsEl = document.getElementById('total-words');
+        if (totalWordsEl && totalWords > 0) {
+            totalWordsEl.innerText = `${totalWords.toLocaleString()}字`;
+            totalWordsEl.style.display = 'inline';
+        }
+        
+        // 渲染目录
+        container.innerHTML = reversedChapters.map(ch => `
+            <a href="https://www.yanzhubg.com/work/xiaoxiao/wfql/wfql.html?chapter=wfql-${ch.num}" class="chapter-item">
+                <span class="chapter-num">第 ${ch.num} 章</span>
+                <span class="chapter-title">${escapeHtml(ch.title)}</span>
+                <span class="chapter-stats">${ch.wordCount.toLocaleString()}字</span>
+            </a>
+        `).join('');
+        
+    } catch (error) {
+        console.error('加载目录失败:', error);
+        container.innerHTML = '<div>目录加载失败</div>';
+    }
+}
+
+// 渲染评论
+function renderComments() {
+    const container = document.getElementById('commentList');
+    if (!container) return;
+
+    // 检查 comments 是否已定义
+    if (typeof comments === 'undefined' || !comments.length) {
+        container.innerHTML = '<div>暂无评论</div>';
+        return;
+    }
+
+    container.innerHTML = comments.map(comment => `
+        <div class="comment-item" data-id="${comment.id}">
+            <div class="comment-text">${escapeHtml(comment.content)}</div>
+            <div class="comment-toggle">▼</div>
+        </div>
+    `).join('');
+
+    // 绑定点击事件
+    document.querySelectorAll('.comment-item').forEach(item => {
+        const toggle = item.querySelector('.comment-toggle');
+        item.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isExpanded = item.classList.toggle('expanded');
+            toggle.textContent = isExpanded ? '▲' : '▼';
+        });
+    });
+}
+
+// 防 XSS
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
+}
+
+// 标签页切换
+function initTabs() {
+    const btns = document.querySelectorAll('.tab-btn');
+    btns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tabId = btn.getAttribute('data-tab');
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+        });
+    });
+}
+
+// 页面初始化
+document.addEventListener('DOMContentLoaded', () => {
+    renderChapters();
+    renderComments();
+    initTabs();
+});      
+</script>      
+
+<script>
+// ===== 回到顶部功能 =====
+function scrollToTop() {
+    window.scrollTo({
+        top: 200,
+        behavior: 'smooth'  // 平滑滚动
+    });
+}
+
+// ===== 切换主题功能 =====
+function toggleTheme() {
+    // 获取当前主题
+    const currentTheme = document.body.classList.contains('dark') ? 'dark' : 'light';
+    // 切换到相反的主题
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    
+    // 更新 body 的 class
+    document.body.className = newTheme;
+    
+    // 保存到 localStorage
+    localStorage.setItem('theme', newTheme);
+    
+    // 更新按钮图标
+    const themeBtn = document.querySelector('.top-btn:first-child');
+    if (themeBtn) {
+        themeBtn.innerHTML = newTheme === 'light' ? '<img src="https://www.yanzhubg.com/setting/light.png">' 
+    : '<img src="https://www.yanzhubg.com/setting/dark.png">';
+    }   
+    console.log('主题已切换为：', newTheme);
+}
+
+// ===== 页面加载时初始化主题 =====
+document.addEventListener('DOMContentLoaded', function() {
+    // 读取保存的主题，默认为浅色
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.body.className = savedTheme;
+    
+    // 初始化按钮图标
+    const themeBtn = document.querySelector('.top-btn:first-child');
+    if (themeBtn) {
+       themeBtn.innerHTML = newTheme === 'light' ? '<img src="https://www.yanzhubg.com/setting/light.png">' 
+    : '<img src="https://www.yanzhubg.com/setting/dark.png">';
+    }
+});
+
+</script>
+
+</div>
+</body>
+</html>
