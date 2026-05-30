@@ -1,30 +1,20 @@
 <!DOCTYPE html>
 <html lang="zh">
+<link rel="stylesheet" href="../../../setting/style.css">
+<link rel="stylesheet" href="../../../setting/reader.css">
 <style>
     body.light {
-    --bg-reader: url('https://yanzhubg-img.oss-cn-wuhan-lr.aliyuncs.com/work/naimo/ljzm-bg-l.png');
+    --bg-reader: url('#');
     }
     body.dark {
-    --bg-reader: url('https://yanzhubg-img.oss-cn-wuhan-lr.aliyuncs.com/work/naimo/ljzm-bg-d.png');
+    --bg-reader: url('#');
     }
  .pure-reader {
     background: none;
     background-image: var(--bg-reader);
-    background-size: cover; 
+    background-size: cover;      
     background-position: top center; 
     background-repeat: no-repeat; 
-    background-attachment: fixed;
-}
-#full-watermark {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;   /* 让水印不干扰点击 */
-  z-index: 9999;
-  background-repeat: repeat;
-  background-size: auto;
 }
 </style>
     
@@ -32,345 +22,228 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>灵鲛织梦-阅读器</title>
-    <link rel="stylesheet" href="https://www.yanzhubg.com/setting/style.css">
-    <link rel="stylesheet" href="https://www.yanzhubg.com/setting/reader.css">
 </head>
-
-<script>
-  (function() {
-    let blackLayer = null;
-
-    function addBlackLayer() {
-      if (blackLayer) return;
-      blackLayer = document.createElement('div');
-      blackLayer.id = 'anti-screenshot-layer';
-      blackLayer.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: #000000;
-        z-index: 99999;
-        pointer-events: none;
-      `;
-      document.body.appendChild(blackLayer);
-    }
-
-    function removeBlackLayer() {
-      if (blackLayer) {
-        blackLayer.remove();
-        blackLayer = null;
-      }
-    }
-    // 页面失去焦点
-    document.addEventListener('visibilitychange', function() {
-      if (document.hidden) {
-        addBlackLayer();   // 黑屏保护
-      } else {
-        removeBlackLayer(); // 恢复
-      }
-    });
-  })();
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'PrintScreen') {
-    addBlackLayer();
-    setTimeout(removeBlackLayer, 800); // 0.8秒后恢复
-  }
-  if ((e.metaKey && e.shiftKey && (e.key === '3' || e.key === '4'))) {
-    addBlackLayer();
-    setTimeout(removeBlackLayer, 800);
-  }
-});
-</script>
 
 <body class="light">
     <!-- 右上角工具栏 -->
     <div class="top-bar">
         <button class="top-btn" onclick="toggleTheme()"><img src="https://www.yanzhubg.com/setting/light.png"></button>
-        <button class="top-btn" onclick="scrollToTop()"><img src="https://www.yanzhubg.com/setting/top.png"></button>
+        <button class="top-btn" onclick="showCatalog()"><img src="https://www.yanzhubg.com/setting/top.png"></button>
         <button class="top-btn" onclick=window.location.href="https://www.yanzhubg.com"><img src="https://www.yanzhubg.com/setting/home.png" alt="首页"></button>
     </div>
 
     <!-- 弹窗目录 -->
     <div class="catalog-modal" id="catalogModal" onclick="if(event.target === this) hideCatalog()">
         <div class="catalog-panel">
-            <h3>目录</h3>
-            <ul class="catalog-list" id="catalogList">
-                <!-- JS动态生成 -->
-            </ul>
-            <button class="close-modal" onclick="hideCatalog()">关 闭</button>
+            <div class="catalog-header">
+            <h3>灵鲛织梦 · 目录</h3>
+            <button class="catalog-close" onclick="hideCatalog()">✕</button>
         </div>
+        <div class="catalog-body">
+            <ul class="catalog-list" id="catalogList"></ul>
+        </div>
+    </div>
     </div>
 
     <!-- 外层容器：负责宽度限制和内部排列 -->
     <div class="outer-container">
         <div class="pure-reader" id="articleContainer">
-            <div class="loading">加载文章中...</div>
+            <div class="loading">加载中...</div>
             <div id="full-watermark"></div>
-    <script>
-    // ===== 章节目录配置（写死在HTML里） =====
-    const chapters = [
-        { id: 'ljzm-1', title: '1 送子观音陈子奚', file: 'articles/ljzm-1.txt' },
-        { id: 'ljzm-2', title: '2 没品的姑娘', file: 'articles/ljzm-2.txt' },
-        { id: 'ljzm-3', title: '3 长得像盘菜', file: 'articles/ljzm-3.txt' },
-        { id: 'ljzm-4', title: '4 鲛的身材很曼妙', file: 'articles/ljzm-4.txt' },
-        { id: 'ljzm-5', title: '5 我卖鱼养你', file: 'articles/ljzm-5.txt' },
-        { id: 'ljzm-6', title: '6 牵手就是有意', file: 'articles/ljzm-6.txt' },
-        { id: 'ljzm-7', title: '7 清白岌岌可危', file: 'articles/ljzm-7.txt' },
-        { id: 'ljzm-8', title: '8 我不需要', file: 'articles/ljzm-8.txt' },
-        { id: 'ljzm-9', title: '9 惊涛骇浪', file: 'articles/ljzm-9.txt' },
-        { id: 'ljzm-10', title: '10 少言贪食呆头鱼', file: 'articles/ljzm-10.txt' },
-        { id: 'ljzm-11', title: '11 落子无悔', file: 'articles/ljzm-11.txt' },
-        { id: 'ljzm-12', title: '12 番外-想要负责', file: 'articles/ljzm-12.txt' },
-        { id: 'ljzm-13', title: '13 番外-彼此唯一', file: 'articles/ljzm-13.txt' },
-        { id: 'ljzm-14', title: '14 单相思', file: 'articles/ljzm-14.txt' },
-        { id: 'ljzm-15', title: '15 洗澡比鱼快', file: 'articles/ljzm-15.txt' }
-    ];
-    
-    let currentChapterIndex = 0; // 当前章节索引
-    
-    // ===== 从URL获取章节ID =====
-    function getChapterFromUrl() {
-        const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get('chapter') || 'ljzm-1';
-    }
-    
-    // ===== 加载文章 =====
-    async function loadChapter(chapterId) {
-        const container = document.getElementById('articleContainer');
-        container.innerHTML = '<div class="loading">加载文章中...</div>';
-        
-        const chapterIndex = chapters.findIndex(ch => ch.id === chapterId);
-        if (chapterIndex === -1) {
-            container.innerHTML = '<div class="loading">文章不存在</div>';
-            return;
-        }
-        
-        currentChapterIndex = chapterIndex;
-        const chapter = chapters[chapterIndex];
+<script>
+        // ===== 从 TXT 文件自动加载章节列表 =====
+async function loadChaptersFromFiles() {
+    const chapters = [];
+    let num = 1;
+    let hasMore = true;
+
+    while (hasMore) {
+        const filePath = `articles/ljzm-${num}.txt`;
         
         try {
-            const response = await fetch(chapter.file);
+            const response = await fetch(filePath);
+            if (!response.ok) {
+                hasMore = false;
+                break;
+            }
+            
             const text = await response.text();
+            const lines = text.split('\n');
+            const firstLine = lines[0].trim();
             
-            const parts = text.split('---');
-            const title = parts[0]?.trim() || chapter.title;
-            const authorDesc = parts[1]?.trim() || '';
-            const tagsStr = parts[2]?.trim() || '';
-            const contentText = parts[3]?.trim() || text;
+            const firstSpaceIndex = firstLine.indexOf(' ');
+            const chapterNum = parseInt(firstLine.substring(0, firstSpaceIndex));
+            const title = firstLine.substring(firstSpaceIndex + 1).trim();
             
-            const tagHtml = tagsStr.split(',').map(tag => {
-                const [text, className] = tag.split(':');
-                return `<span class="${className || 'tag1'}">${text}</span>`;
-            }).join('');
+            chapters.push({
+                id: `ljzm-${chapterNum}`,
+                num: chapterNum,
+                title: title,
+                file: filePath
+            });
             
-            const paragraphs = contentText.split('\n').filter(p => p.trim() !== '');
-            const contentHtml = paragraphs.map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
-            
-            document.title = `灵鲛织梦-${title}`;
-            
-            container.innerHTML = `
-                <h1 class="article-title">${title}</h1>
-                <div class="article-author">${authorDesc}</div>
-                <div class="article-tags">${tagHtml}</div>
-                <div class="article-content">${contentHtml}</div>
-                <div class="chapter-nav">
-                    <p class="prev-chapter">
-                        ${currentChapterIndex > 0 ? 
-                            `<a href="?chapter=${chapters[currentChapterIndex-1].id}" class="prev-link">← ${chapters[currentChapterIndex-1].title}</a>` 
-                            : ''}
-                    </p>
-                    <a href="javascript:void(0)" onclick="showCatalog()" class="catalog-link">目录</a>
-                    <p class="next-chapter">
-                        ${currentChapterIndex < chapters.length - 1 ? 
-                            `<a href="?chapter=${chapters[currentChapterIndex+1].id}" class="next-link">${chapters[currentChapterIndex+1].title} →</a>` 
-                            : ''}
-                    </p>
-                </div>
-            `;
-            
-            const url = new URL(window.location);
-            url.searchParams.set('chapter', chapterId);
-            window.history.pushState({}, '', url);
-            
-        } catch (error) {
-            console.error('加载失败:', error);
-            container.innerHTML = `
-                <div class="loading" style="color: #e06e6e;">
-                    加载失败：${error.message}<br>
-                    <button onclick="loadChapter('${chapterId}')" style="margin-top:20px; padding:8px 20px;">重试</button>
-                </div>
-            `;
+            num++;
+        } catch (err) {
+            hasMore = false;
         }
     }
     
-    // ===== 显示目录弹窗 =====
-    function showCatalog() {
-        const modal = document.getElementById('catalogModal');
-        const list = document.getElementById('catalogList');
+    return chapters;
+}
+
+// ===== 全局变量 =====
+let chapters = [];
+let currentChapterIndex = 0;
+
+// ===== 从URL获取章节ID =====
+function getChapterFromUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('chapter') || 'ljzm-1';
+}
+
+// ===== 加载文章 =====
+async function loadChapter(chapterId) {
+    const container = document.getElementById('articleContainer');
+    container.innerHTML = '<div class="loading">加载中...</div>';
+    
+    const chapterIndex = chapters.findIndex(ch => ch.id === chapterId);
+    if (chapterIndex === -1) {
+        container.innerHTML = '<div class="loading">文章不存在</div>';
+        return;
+    }
+    
+    currentChapterIndex = chapterIndex;
+    const chapter = chapters[chapterIndex];
+    
+    try {
+        const response = await fetch(chapter.file);
+        const text = await response.text();
         
-        list.innerHTML = chapters.map((ch, index) => `
+        const parts = text.split('---');
+        const title = chapter.title;
+        const authorDesc = parts[1]?.trim() || '';
+        const tagsStr = parts[2]?.trim() || '';
+        const contentText = parts[3]?.trim() || text;
+        
+        const tagHtml = tagsStr.split(',').map(tag => {
+            const [text, className] = tag.split(':');
+            return `<span class="${className || 'tag1'}">${text}</span>`;
+        }).join('');
+        
+        const paragraphs = contentText.split('\n').filter(p => p.trim() !== '');
+        const contentHtml = paragraphs.map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
+        
+        document.title = `${title}`;
+        
+        container.innerHTML = `
+            <h1 class="article-title">${chapters[currentChapterIndex].num} · ${title}</h1>
+            <div class="article-author">${authorDesc}</div>
+            <div class="article-tags">${tagHtml}</div>
+            <div class="article-content">${contentHtml}</div>
+            <div class="chapter-nav">
+                <p class="prev-chapter">
+                    ${currentChapterIndex > 0 ? 
+                        `<a href="?chapter=${chapters[currentChapterIndex-1].id}" class="prev-link">← ${chapters[currentChapterIndex-1].title}</a>` 
+                        : ''}
+                </p>
+                <a href="javascript:void(0)" onclick="showCatalog()" class="catalog-link">目录</a>
+                <p class="next-chapter">
+                    ${currentChapterIndex < chapters.length - 1 ? 
+                        `<a href="?chapter=${chapters[currentChapterIndex+1].id}" class="next-link">${chapters[currentChapterIndex+1].title} →</a>` 
+                        : ''}
+                </p>
+            </div>
+        `;
+        
+        const url = new URL(window.location);
+        url.searchParams.set('chapter', chapterId);
+        window.history.pushState({}, '', url);
+        
+    } catch (error) {
+        console.error('加载失败:', error);
+        container.innerHTML = `
+            <div class="loading" style="color: #e06e6e;">
+                加载失败：${error.message}<br>
+                <button onclick="loadChapter('${chapterId}')" style="margin-top:20px; padding:8px 20px;">重试</button>
+            </div>
+        `;
+    }
+}
+
+// ===== 显示目录弹窗 =====
+function showCatalog() {
+    const modal = document.getElementById('catalogModal');
+    const list = document.getElementById('catalogList');
+    
+    // 倒序排列（最新章节在前）
+    const reversedChapters = [...chapters].reverse();
+    
+    list.innerHTML = reversedChapters.map((ch, index) => {
+        const originalIndex = chapters.findIndex(c => c.id === ch.id);
+        return `
             <li>
                 <a href="?chapter=${ch.id}" 
-                   class="${index === currentChapterIndex ? 'current' : ''}"
+                   class="${originalIndex === currentChapterIndex ? 'current' : ''}"
                    onclick="hideCatalog(); loadChapter('${ch.id}'); return false;">
-                    ${ch.title}
+                    <span class="catalog-num">${ch.num}</span>
+                    <span class="catalog-title">${ch.title}</span>
                 </a>
             </li>
-        `).join('');
-        
-        modal.classList.add('show');
+        `;
+    }).join('');
+    
+    modal.classList.add('show');
+}
+
+function hideCatalog() {
+    document.getElementById('catalogModal').classList.remove('show');
+}
+
+function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function toggleTheme() {
+    const currentTheme = document.body.classList.contains('dark') ? 'dark' : 'light';
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    
+    document.body.className = newTheme;
+    localStorage.setItem('theme', newTheme);
+    
+    const themeBtn = document.querySelector('.top-btn:first-child');
+    if (themeBtn) {
+        themeBtn.innerHTML = newTheme === 'light' ? 
+            '<img src="https://www.yanzhubg.com/setting/light.png">' : 
+            '<img src="https://www.yanzhubg.com/setting/dark.png">';
+    }
+}
+
+// ===== 初始化所有功能 =====
+document.addEventListener('DOMContentLoaded', async function() {
+    // 初始化主题
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.body.className = savedTheme;
+    
+    const themeBtn = document.querySelector('.top-btn:first-child');
+    if (themeBtn) {
+        themeBtn.innerHTML = savedTheme === 'light' ? 
+            '<img src="https://www.yanzhubg.com/setting/light.png">' : 
+            '<img src="https://www.yanzhubg.com/setting/dark.png">';
     }
     
-    function hideCatalog() {
-        document.getElementById('catalogModal').classList.remove('show');
-    }
+    // 自动加载章节列表
+    chapters = await loadChaptersFromFiles();
     
-    function scrollToTop() {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-    
-    function toggleTheme() {
-        const currentTheme = document.body.classList.contains('dark') ? 'dark' : 'light';
-        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-        
-        document.body.className = newTheme;
-        localStorage.setItem('theme', newTheme);
-        
-        const themeBtn = document.querySelector('.top-btn:first-child');
-        if (themeBtn) {
-            themeBtn.innerHTML = newTheme === 'light' ? 
-                '<img src="https://www.yanzhubg.com/setting/light.png">' : 
-                '<img src="https://www.yanzhubg.com/setting/dark.png">';
-        }
-    }
-    
-    // ===== 初始化所有功能 =====
-    document.addEventListener('DOMContentLoaded', function() {
-        // 初始化主题
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        document.body.className = savedTheme;
-        
-        const themeBtn = document.querySelector('.top-btn:first-child');
-        if (themeBtn) {
-            themeBtn.innerHTML = savedTheme === 'light' ? 
-                '<img src="https://www.yanzhubg.com/setting/light.png">' : 
-                '<img src="https://www.yanzhubg.com/setting/dark.png">';
-        }
-        
-        // 加载文章
-        const chapterId = getChapterFromUrl();
-        loadChapter(chapterId);
-    });
+    // 加载文章
+    const chapterId = getChapterFromUrl();
+    loadChapter(chapterId);
+});
 
-
-    // 监听浏览器后退/前进
-    window.addEventListener('popstate', function() {
-        const chapterId = getChapterFromUrl();
-        loadChapter(chapterId);
-    });
-        
- <!-- ========= 防盗组合：全屏水印 + 失焦黑屏 ========= -->
-(function() {
-  // ========= 1. 水印配置 =========
-  const TEXT = '© 江晏×少东家 · 同人作品 · 禁止转载';
-  const FONT_SIZE = 16;
-  const OPACITY_LIGHT = 0.06;
-  const OPACITY_DARK  = 0.08;
-  const COLS = 8;       // 横向水印数量（越多越密）
-  const ROWS = 16;      // 纵向水印数量（控制长图水印密度）
-  const ROTATE = -15;
-
-  function drawWatermark() {
-    const w = window.innerWidth;
-    const h = window.innerHeight;
-    const canvas = document.createElement('canvas');
-    canvas.width = w;
-    canvas.height = h;
-    const ctx = canvas.getContext('2d');
-
-    const isDark = document.body.classList.contains('dark');
-    const opacity = isDark ? OPACITY_DARK : OPACITY_LIGHT;
-    ctx.font = `${FONT_SIZE}px "Noto Serif SC", "PingFang SC", system-ui`;
-    ctx.fillStyle = `rgba(${isDark ? 255 : 0}, ${isDark ? 255 : 0}, ${isDark ? 255 : 0}, ${opacity})`;
-
-    const stepX = w / (COLS + 1);
-    const stepY = h / (ROWS + 1);
-
-    for (let i = 1; i <= COLS; i++) {
-      for (let j = 1; j <= ROWS; j++) {
-        const x = i * stepX;
-        const y = j * stepY;
-        ctx.save();
-        ctx.translate(x, y);
-        ctx.rotate(ROTATE * Math.PI / 180);
-        const textWidth = ctx.measureText(TEXT).width;
-        ctx.fillText(TEXT, -textWidth / 2, 0);
-        ctx.restore();
-      }
-    }
-
-    const watermarkDiv = document.getElementById('full-watermark');
-    if (watermarkDiv) {
-      watermarkDiv.style.backgroundImage = `url(${canvas.toDataURL()})`;
-      watermarkDiv.style.backgroundSize = `${w}px ${h}px`;
-    }
-  }
-
-  drawWatermark();
-  window.addEventListener('resize', drawWatermark);
-  const observer = new MutationObserver(() => drawWatermark());
-  observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
-
-  // ========= 2. 截屏黑屏（失焦 + 关键截图热键） =========
-  let blackLayer = null;
-
-  function addBlackLayer() {
-    if (blackLayer) return;
-    blackLayer = document.createElement('div');
-    blackLayer.id = 'anti-screenshot';
-    blackLayer.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: black;
-      z-index: 99999;
-      pointer-events: none;
-    `;
-    document.body.appendChild(blackLayer);
-  }
-
-  function removeBlackLayer() {
-    if (blackLayer) {
-      blackLayer.remove();
-      blackLayer = null;
-    }
-  }
-
-  // 页面失焦黑屏
-  document.addEventListener('visibilitychange', function() {
-    if (document.hidden) {
-      addBlackLayer();
-    } else {
-      removeBlackLayer();
-    }
-  });
-
-  // 捕捉截图组合键（PrintScreen / Command+Shift+3/4）
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'PrintScreen') {
-      addBlackLayer();
-      setTimeout(removeBlackLayer, 800);
-    }
-    if ((e.metaKey && e.shiftKey && (e.key === '3' || e.key === '4'))) {
-      addBlackLayer();
-      setTimeout(removeBlackLayer, 800);
-    }
-  });
-})();
+// 监听浏览器后退/前进
+window.addEventListener('popstate', function() {
+    const chapterId = getChapterFromUrl();
+    loadChapter(chapterId);
+});
 </script>
 </body>
 </html>
