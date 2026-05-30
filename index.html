@@ -121,11 +121,10 @@
 <script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
 
 <script>
-    // 等待页面所有内容（尤其是图片）加载完毕后再开始布局
     window.addEventListener('load', function() {
         var container = document.querySelector('.masonry-grid');
         
-        // 初始化 Masonry，配置项与掘金文章完全一致
+        // 初始化 Masonry
         var msnry = new Masonry(container, {
             columnWidth: '.grid-sizer', // 指定列宽的“标尺”元素
             itemSelector: '.grid-item', // 指定哪些元素是卡片
@@ -134,23 +133,26 @@
             transitionDuration: '0.2s'
         });
 
-        // 等所有图片加载完后，重新刷新布局，避免图片重叠
+        // 等所有图片加载完后，重新刷新布局
         imagesLoaded(container, function() {
             msnry.layout();
         });
-    });
-    
-    document.querySelectorAll('.grid-item').forEach(item => {
-        item.style.cursor = 'pointer';
-        item.addEventListener('click', () => {
-        const link = item.getAttribute('data-link');
-        if (link) window.location.href = link;
-    });
 
+        document.querySelectorAll('.grid-item').forEach(item => {
+            item.style.cursor = 'pointer';
+            item.addEventListener('click', () => {
+            const link = item.getAttribute('data-link');
+            if (link) window.location.href = link;
+        });
+});
+    });
+</script>
+
+<script>
 // ===== 回到顶部功能 =====
 function scrollToTop() {
     window.scrollTo({
-        top: 200,
+        top: 0,
         behavior: 'smooth'  // 平滑滚动
     });
 }
@@ -174,7 +176,6 @@ function toggleTheme() {
         themeBtn.innerHTML = newTheme === 'light' ? '<img src="https://www.yanzhubg.com/setting/light.png">' 
     : '<img src="https://www.yanzhubg.com/setting/dark.png">';
     }
-    
     console.log('主题已切换为：', newTheme);
 }
 
@@ -213,7 +214,6 @@ document.addEventListener('DOMContentLoaded', function() {
         '入江湖，下江南，（）江叔。',
         '江晏：可还记得回家的路？',
         '江晏：（无奈）小宝，别闹了。',
-        '江晏：回家。',
     ];
     
     // 初始化计数
@@ -259,8 +259,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // 启动
     初始化();
 </script>
-
-<script src="https://cdn.jsdelivr.net/npm/artalk@2/dist/Artalk.js"></script>
 
 </div>
 
