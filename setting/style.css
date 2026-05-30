@@ -563,3 +563,47 @@ body {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* 手机屏幕优化：完全撑满，不留空隙 */
+@media (max-width: 768px) {
+    body {
+        place-items: stretch;  /* 取消居中，改为拉伸 */
+    }
+    .outer-container {
+        max-width: 100%;
+        padding: 0;            /* 去掉所有内边距，让卡片贴边 */
+        min-height: 100vh;
+    }
+    .reader {
+        border-radius: 0;       /* 去掉圆角 */
+        padding: 25px 20px;     /* 减小内边距 */
+        min-height: 100vh;       /* 撑满全屏高度 */
+        border: none;            /* 去掉边框 */
+        box-shadow: none;         /* 去掉阴影 */
+        border-left: none;
+        border-right: none;
+    }
+    .author-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }   
+    .author-stats {
+        justify-content: center;
+        flex-wrap: wrap;
+    }  
+    .author-tags {
+        justify-content: center;
+    }
+}
+
+/* 超小屏优化 */
+@media (max-width: 480px) {
+    .article-title {
+        font-size: 1.8em;
+    }
+    .article-content p {
+        font-size: 1.1em;
+        line-height: 1.7;
+    }
+}
