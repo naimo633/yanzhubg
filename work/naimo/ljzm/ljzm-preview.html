@@ -84,7 +84,6 @@
             const lines = text.split('\n');
             const firstLine = lines[0].trim();
             
-            // 解析 "1 缘起沙场" 格式
             const firstSpaceIndex = firstLine.indexOf(' ');
             const chapterNum = parseInt(firstLine.substring(0, firstSpaceIndex));
             const title = firstLine.substring(firstSpaceIndex + 1).trim();
@@ -157,22 +156,26 @@ function renderComments() {
     const container = document.getElementById('commentList');
     if (!container) return;
 
-    // 检查 comments 是否已定义
     if (typeof comments === 'undefined' || !comments.length) {
         container.innerHTML = '<div>暂无评论</div>';
         return;
     }
 
-    container.innerHTML = comments.map(comment => `
-        <div class="comment-item" data-id="${comment.id}">
-            <div class="comment-text">${escapeHtml(comment.content)}</div>
-            <div class="comment-toggle">▼</div>
-        </div>
-    `).join('');
+    container.innerHTML = comments.map(comment => {
+        const formattedContent = (comment.content || '').replace(/\n/g, '<br>');
+        return `
+            <div class="comment-item" data-id="${comment.id}">
+                <div class="comment-text">${formattedContent}</div>
+                <div class="comment-toggle">▼</div>
+            </div>
+        `;
+    }).join('');
 
-    // 绑定点击事件
+    // 重新绑定事件（关键！）
     document.querySelectorAll('.comment-item').forEach(item => {
         const toggle = item.querySelector('.comment-toggle');
+        if (!toggle) return;
+
         item.addEventListener('click', (e) => {
             e.stopPropagation();
             const isExpanded = item.classList.toggle('expanded');
@@ -180,7 +183,7 @@ function renderComments() {
         });
     });
 }
-
+    
 // 防 XSS
 function escapeHtml(str) {
     if (!str) return '';
