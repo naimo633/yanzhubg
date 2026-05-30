@@ -66,7 +66,7 @@
   </div>
             
   <!-- 卡片 1 -->
-  <div class="grid-item">
+  <div class="grid-item" data-link="https://www.yanzhubg.com/work/xiaoxiao/wfql/wfql-preview.html">
     <div class="book-cover">
       <img src="https://yanzhubg-img.oss-cn-wuhan-lr.aliyuncs.com/work/wfql.png">
       <span class="update-date" style="color: #2F91BF">2026/05/20</span>
@@ -139,6 +139,13 @@
             msnry.layout();
         });
     });
+    
+    document.querySelectorAll('.grid-item').forEach(item => {
+        item.style.cursor = 'pointer';
+        item.addEventListener('click', () => {
+        const link = item.getAttribute('data-link');
+        if (link) window.location.href = link;
+    });
 
 // ===== 回到顶部功能 =====
 function scrollToTop() {
@@ -166,11 +173,6 @@ function toggleTheme() {
     if (themeBtn) {
         themeBtn.innerHTML = newTheme === 'light' ? '<img src="https://www.yanzhubg.com/setting/light.png">' 
     : '<img src="https://www.yanzhubg.com/setting/dark.png">';
-    }
-    
-    // 同步 Artalk 主题（如果你有 artalkInstance）
-    if (window.artalkInstance) {
-        window.artalkInstance.setDarkMode(newTheme === 'dark');
     }
     
     console.log('主题已切换为：', newTheme);
@@ -211,6 +213,7 @@ document.addEventListener('DOMContentLoaded', function() {
         '入江湖，下江南，（）江叔。',
         '江晏：可还记得回家的路？',
         '江晏：（无奈）小宝，别闹了。',
+        '江晏：回家。',
     ];
     
     // 初始化计数
