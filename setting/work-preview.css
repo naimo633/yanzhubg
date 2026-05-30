@@ -194,7 +194,7 @@ body {
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    padding-right: 50px;
+    padding-right: 1em;
 }
 
 .comment-item.expanded .comment-text {
