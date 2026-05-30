@@ -162,20 +162,35 @@ function renderComments() {
     }
 
     container.innerHTML = comments.map(comment => {
-        const formattedContent = (comment.content || '').replace(/\n/g, '<br>');
+        // 有图才显示图片
+        const imageHtml = comment.image && comment.image.trim() !== '' 
+            ? `<img src="${comment.image}" class="comment-image" alt="返图" loading="lazy">` 
+            : '';
+        
+        // 有文字才显示文字（把换行转成 <br>）
+        const textHtml = comment.text && comment.text.trim() !== '' 
+            ? `<div class="comment-text-content">${comment.text.replace(/\n/g, '<br>')}</div>` 
+            : '';
+        
+        // 如果图文都为空，跳过这条评论
+        if (!textHtml && !imageHtml) return '';
+        
         return `
             <div class="comment-item" data-id="${comment.id}">
-                <div class="comment-text">${formattedContent}</div>
+                <div class="comment-content-wrapper">
+                    ${textHtml}
+                    ${imageHtml}
+                </div>
                 <div class="comment-toggle">▼</div>
             </div>
         `;
-    }).join('');
+    }).filter(html => html !== '').join('');
 
-    // 重新绑定事件（关键！）
+    // 重新绑定事件
     document.querySelectorAll('.comment-item').forEach(item => {
         const toggle = item.querySelector('.comment-toggle');
         if (!toggle) return;
-
+        
         item.addEventListener('click', (e) => {
             e.stopPropagation();
             const isExpanded = item.classList.toggle('expanded');
