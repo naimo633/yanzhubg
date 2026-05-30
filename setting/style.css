@@ -506,6 +506,11 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
 
+.grid-item-link {
+  text-decoration: none;
+  display: block;
+}
+
 /* 你的图片样式 */
 .grid-item img {
     width: 100%;
