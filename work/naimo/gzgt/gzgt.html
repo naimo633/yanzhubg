@@ -1,1 +1,249 @@
-1
+<!DOCTYPE html>
+<html lang="zh">
+<link rel="stylesheet" href="../../../setting/style.css">
+<link rel="stylesheet" href="../../../setting/reader.css">
+<style>
+    body.light {
+    --bg-reader: url('#');
+    }
+    body.dark {
+    --bg-reader: url('#');
+    }
+ .pure-reader {
+    background: none;
+    background-image: var(--bg-reader);
+    background-size: cover;      
+    background-position: top center; 
+    background-repeat: no-repeat; 
+}
+</style>
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>河西规则怪谈-阅读器</title>
+</head>
+
+<body class="light">
+    <!-- 右上角工具栏 -->
+    <div class="top-bar">
+        <button class="top-btn" onclick="toggleTheme()"><img src="https://www.yanzhubg.com/setting/light.png"></button>
+        <button class="top-btn" onclick="showCatalog()"><img src="https://www.yanzhubg.com/setting/top.png"></button>
+        <button class="top-btn" onclick=window.location.href="https://www.yanzhubg.com"><img src="https://www.yanzhubg.com/setting/home.png" alt="首页"></button>
+    </div>
+
+    <!-- 弹窗目录 -->
+    <div class="catalog-modal" id="catalogModal" onclick="if(event.target === this) hideCatalog()">
+        <div class="catalog-panel">
+            <div class="catalog-header">
+            <h3>河西规则怪谈 · 目录</h3>
+            <button class="catalog-close" onclick="hideCatalog()">✕</button>
+        </div>
+        <div class="catalog-body">
+            <ul class="catalog-list" id="catalogList"></ul>
+        </div>
+    </div>
+    </div>
+
+    <!-- 外层容器：负责宽度限制和内部排列 -->
+    <div class="outer-container">
+        <div class="pure-reader" id="articleContainer">
+            <div class="loading">加载中...</div>
+            <div id="full-watermark"></div>
+<script>
+        // ===== 从 TXT 文件自动加载章节列表 =====
+async function loadChaptersFromFiles() {
+    const chapters = [];
+    let num = 1;
+    let hasMore = true;
+
+    while (hasMore) {
+        const filePath = `articles/gzgt-${num}.txt`;
+        
+        try {
+            const response = await fetch(filePath);
+            if (!response.ok) {
+                hasMore = false;
+                break;
+            }
+            
+            const text = await response.text();
+            const lines = text.split('\n');
+            const firstLine = lines[0].trim();
+            
+            const firstSpaceIndex = firstLine.indexOf(' ');
+            const chapterNum = parseInt(firstLine.substring(0, firstSpaceIndex));
+            const title = firstLine.substring(firstSpaceIndex + 1).trim();
+            
+            chapters.push({
+                id: `gzgt-${chapterNum}`,
+                num: chapterNum,
+                title: title,
+                file: filePath
+            });
+            
+            num++;
+        } catch (err) {
+            hasMore = false;
+        }
+    }
+    
+    return chapters;
+}
+
+// ===== 全局变量 =====
+let chapters = [];
+let currentChapterIndex = 0;
+
+// ===== 从URL获取章节ID =====
+function getChapterFromUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('chapter') || 'gzgt-1';
+}
+
+// ===== 加载文章 =====
+async function loadChapter(chapterId) {
+    const container = document.getElementById('articleContainer');
+    container.innerHTML = '<div class="loading">加载中...</div>';
+    
+    const chapterIndex = chapters.findIndex(ch => ch.id === chapterId);
+    if (chapterIndex === -1) {
+        container.innerHTML = '<div class="loading">文章不存在</div>';
+        return;
+    }
+    
+    currentChapterIndex = chapterIndex;
+    const chapter = chapters[chapterIndex];
+    
+    try {
+        const response = await fetch(chapter.file);
+        const text = await response.text();
+        
+        const parts = text.split('---');
+        const title = chapter.title;
+        const authorDesc = parts[1]?.trim() || '';
+        const tagsStr = parts[2]?.trim() || '';
+        const contentText = parts[3]?.trim() || text;
+        
+        const tagHtml = tagsStr.split(',').map(tag => {
+            const [text, className] = tag.split(':');
+            return `<span class="${className || 'tag1'}">${text}</span>`;
+        }).join('');
+        
+        const paragraphs = contentText.split('\n').filter(p => p.trim() !== '');
+        const contentHtml = paragraphs.map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
+        
+        document.title = `${title}`;
+        
+        container.innerHTML = `
+            <h1 class="article-title">${chapters[currentChapterIndex].num} · ${title}</h1>
+            <div class="article-author">${authorDesc}</div>
+            <div class="article-tags">${tagHtml}</div>
+            <div class="article-content">${contentHtml}</div>
+            <div class="chapter-nav">
+                <p class="prev-chapter">
+                    ${currentChapterIndex > 0 ? 
+                        `<a href="?chapter=${chapters[currentChapterIndex-1].id}" class="prev-link">← ${chapters[currentChapterIndex-1].title}</a>` 
+                        : ''}
+                </p>
+                <a href="javascript:void(0)" onclick="showCatalog()" class="catalog-link">目录</a>
+                <p class="next-chapter">
+                    ${currentChapterIndex < chapters.length - 1 ? 
+                        `<a href="?chapter=${chapters[currentChapterIndex+1].id}" class="next-link">${chapters[currentChapterIndex+1].title} →</a>` 
+                        : ''}
+                </p>
+            </div>
+        `;
+        
+        const url = new URL(window.location);
+        url.searchParams.set('chapter', chapterId);
+        window.history.pushState({}, '', url);
+        
+    } catch (error) {
+        console.error('加载失败:', error);
+        container.innerHTML = `
+            <div class="loading" style="color: #e06e6e;">
+                加载失败：${error.message}<br>
+                <button onclick="loadChapter('${chapterId}')" style="margin-top:20px; padding:8px 20px;">重试</button>
+            </div>
+        `;
+    }
+}
+
+// ===== 显示目录弹窗 =====
+function showCatalog() {
+    const modal = document.getElementById('catalogModal');
+    const list = document.getElementById('catalogList');
+    
+    // 倒序排列（最新章节在前）
+    const reversedChapters = [...chapters].reverse();
+    
+    list.innerHTML = reversedChapters.map((ch, index) => {
+        const originalIndex = chapters.findIndex(c => c.id === ch.id);
+        return `
+            <li>
+                <a href="?chapter=${ch.id}" 
+                   class="${originalIndex === currentChapterIndex ? 'current' : ''}"
+                   onclick="hideCatalog(); loadChapter('${ch.id}'); return false;">
+                    <span class="catalog-num">${ch.num}</span>
+                    <span class="catalog-title">${ch.title}</span>
+                </a>
+            </li>
+        `;
+    }).join('');
+    
+    modal.classList.add('show');
+}
+
+function hideCatalog() {
+    document.getElementById('catalogModal').classList.remove('show');
+}
+
+function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function toggleTheme() {
+    const currentTheme = document.body.classList.contains('dark') ? 'dark' : 'light';
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    
+    document.body.className = newTheme;
+    localStorage.setItem('theme', newTheme);
+    
+    const themeBtn = document.querySelector('.top-btn:first-child');
+    if (themeBtn) {
+        themeBtn.innerHTML = newTheme === 'light' ? 
+            '<img src="https://www.yanzhubg.com/setting/light.png">' : 
+            '<img src="https://www.yanzhubg.com/setting/dark.png">';
+    }
+}
+
+// ===== 初始化所有功能 =====
+document.addEventListener('DOMContentLoaded', async function() {
+    // 初始化主题
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.body.className = savedTheme;
+    
+    const themeBtn = document.querySelector('.top-btn:first-child');
+    if (themeBtn) {
+        themeBtn.innerHTML = savedTheme === 'light' ? 
+            '<img src="https://www.yanzhubg.com/setting/light.png">' : 
+            '<img src="https://www.yanzhubg.com/setting/dark.png">';
+    }
+    
+    // 自动加载章节列表
+    chapters = await loadChaptersFromFiles();
+    
+    // 加载文章
+    const chapterId = getChapterFromUrl();
+    loadChapter(chapterId);
+});
+
+// 监听浏览器后退/前进
+window.addEventListener('popstate', function() {
+    const chapterId = getChapterFromUrl();
+    loadChapter(chapterId);
+});
+</script>
+</body>
+</html>
