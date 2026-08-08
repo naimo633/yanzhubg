@@ -32,7 +32,7 @@
 
 <div class="hero-section">
             <div class="book-cover-large">
-                <img src="https://yanzhubg-img.oss-cn-wuhan-lr.aliyuncs.com/work/ycy.jpg" alt="有情燕">
+                <img src="https://yanzhubg-img.oss-cn-wuhan-lr.aliyuncs.com/work/yqy-bg.jpg" alt="有情燕">
             </div>
             <h1 class="book-title">有情燕</h1>
             <div class="book-author">晏晏承宁</div>        
@@ -60,7 +60,7 @@
         </div>
     </div>
 
-<script src="ycy-comments.js"></script>
+<script src="yqy-comments.js"></script>
 
 <script>
     async function loadChaptersFromFiles() {
@@ -69,7 +69,7 @@
     let hasMore = true;
 
     while (hasMore) {
-        const filePath = `https://www.yanzhubg.com/work/yanyanchengning/ycy/articles/ycy-${num}.txt`;
+        const filePath = `https://www.yanzhubg.com/work/yanyanchengning/yqy/articles/yqy-${num}.txt`;
         
         try {
             const response = await fetch(filePath);
@@ -136,7 +136,7 @@ async function renderChapters() {
         
         // 渲染目录
         container.innerHTML = reversedChapters.map(ch => `
-            <a href="https://www.yanzhubg.com/work/yanyanchengning/ycy/ycy.html?chapter=ycy-${ch.num}" class="chapter-item">
+            <a href="https://www.yanzhubg.com/work/yanyanchengning/yqy/yqy.html?chapter=yqy-${ch.num}" class="chapter-item">
                 <span class="chapter-num">第 ${ch.num} 章</span>
                 <span class="chapter-title">${escapeHtml(ch.title)}</span>
                 <span class="chapter-stats">${ch.wordCount.toLocaleString()}字</span>
