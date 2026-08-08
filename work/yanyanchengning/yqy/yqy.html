@@ -58,7 +58,7 @@ async function loadChaptersFromFiles() {
     let hasMore = true;
 
     while (hasMore) {
-        const filePath = `articles/ycy-${num}.txt`;
+        const filePath = `articles/yqy-${num}.txt`;
         
         try {
             const response = await fetch(filePath);
@@ -76,7 +76,7 @@ async function loadChaptersFromFiles() {
             const title = firstLine.substring(firstSpaceIndex + 1).trim();
             
             chapters.push({
-                id: `ycy-${chapterNum}`,
+                id: `yqy-${chapterNum}`,
                 num: chapterNum,
                 title: title,
                 file: filePath
