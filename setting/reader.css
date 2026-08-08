@@ -118,6 +118,24 @@
     color: var(--text);
 }
 
+.article-content h2 {
+    display: block;
+    font-size: 1.5em;
+    margin-left:1em;
+}
+
+.article-content blockquote {
+    display: block;
+    margin-block-start: 1em;
+    border-left:4px solid var(--text-light);
+    color:var(--text-light);
+    margin-block-end: 1em;
+    margin-inline-start: 1em;
+    margin-inline-end: 1em;
+    padding-left:0.5em;
+    unicode-bidi: isolate;
+}
+
 /* 手机屏幕优化：完全撑满，不留空隙 */
 @media (max-width: 768px) {
     body {
